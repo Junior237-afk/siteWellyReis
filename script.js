@@ -156,6 +156,8 @@ const { data: horariosReservados, error: erroReservados } =
         .from("horarios_reservados")
         .select("horario_id");
 
+console.log("Horários reservados:", horariosReservados);
+console.log("Erro ao buscar horários reservados:", erroReservados);
 if (erroReservados) {
     console.error(
         "Erro ao verificar horários reservados:",
