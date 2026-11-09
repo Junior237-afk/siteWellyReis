@@ -7,7 +7,7 @@ const supabaseClient = supabase.createClient(
     SUPABASE_KEY
 );
 
-const CLIENTE_SLUG = "welly-reis";
+const CLIENTE_SLUG = "cliente-teste";
 
 let clienteAtual = null;
 
@@ -156,8 +156,9 @@ const { data: horariosReservados, error: erroReservados } =
         .from("horarios_reservados")
         .select("horario_id");
 
-console.log("Horários reservados:", horariosReservados);
-console.log("Erro ao buscar horários reservados:", erroReservados);
+        console.log("Horários reservados:", horariosReservados);
+console.log("Erro ao consultar reservas:", erroReservados);
+
 if (erroReservados) {
     console.error(
         "Erro ao verificar horários reservados:",
@@ -222,6 +223,12 @@ botaoAgendar.addEventListener("click", async function () {
 
     // Pegando os valores do formulário
     const servico = document.getElementById("servico").value;
+
+// Pegando o preço do serviço selecionado
+const selectServico = document.getElementById("servico");
+const opcaoServico = selectServico.options[selectServico.selectedIndex];
+const valorServico = Number(opcaoServico.dataset.valor);
+
     const data = document.getElementById("data").value;
     const selectHorarioEscolhido = document.getElementById("horario");
 const horarioId = selectHorarioEscolhido.value;
@@ -258,10 +265,7 @@ if (whatsappNumeros.length !== 11) {
 
 
     // Pegando o nome bonito do serviço
-   const selectServico = document.getElementById("servico");
-
-const nomeServico =
-    selectServico.options[selectServico.selectedIndex].text;
+const nomeServico = opcaoServico.text;
 
 // Salvando a reserva no Supabase
 const { error: erroReserva } = await supabaseClient
@@ -273,6 +277,7 @@ const { error: erroReserva } = await supabaseClient
             nome: nome,
             whatsapp: whatsappNumeros,
             servico: nomeServico,
+            valor_servico: valorServico,
             status: "reservado"
         }
     ]);
@@ -291,8 +296,12 @@ if (erroReserva) {
 }
 
 
-   // Número do WhatsApp da Welly
-const numeroWelly = "5599982668917";
+   let numeroEmpresa = clienteAtual.whatsapp.replace(/\D/g, "");
+
+// Adiciona o código do Brasil caso ainda não tenha
+if (!numeroEmpresa.startsWith("55")) {
+    numeroEmpresa = "55" + numeroEmpresa;
+}
 
 
     // Mensagem que será enviada
@@ -315,7 +324,8 @@ const numeroWelly = "5599982668917";
 
     // Criando o link do WhatsApp
     const linkWhatsApp =
-    `https://wa.me/${numeroWelly}?text=${mensagemCodificada}`;
+    `https://wa.me/${numeroEmpresa}?text=${mensagemCodificada}`;
+
 
     // Abrindo o WhatsApp
     window.open(linkWhatsApp, "_blank");
